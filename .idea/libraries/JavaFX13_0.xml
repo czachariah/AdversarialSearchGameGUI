@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="JavaFX13.0">
+    <CLASSES>
+      <root url="file://$USER_HOME$/Documents/Software Meth Stuff/Proj4/JavaFX13.0.2JarFiles" />
+    </CLASSES>
+    <JAVADOC />
+    <NATIVE>
+      <root url="file://$USER_HOME$/Documents/Software Meth Stuff/Proj4/JavaFX13.0.2JarFiles" />
+    </NATIVE>
+    <SOURCES>
+      <root url="file://$USER_HOME$/Documents/Software Meth Stuff/Proj4/JavaFX13.0.2JarFiles" />
+    </SOURCES>
+    <jarDirectory url="file://$USER_HOME$/Documents/Software Meth Stuff/Proj4/JavaFX13.0.2JarFiles" recursive="false" />
+    <jarDirectory url="file://$USER_HOME$/Documents/Software Meth Stuff/Proj4/JavaFX13.0.2JarFiles" recursive="false" type="SOURCES" />
+  </library>
+</component>
