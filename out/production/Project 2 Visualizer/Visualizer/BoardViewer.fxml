@@ -54,7 +54,7 @@
             <Font size="18.0" />
          </font>
          <toggleGroup>
-            <ToggleGroup fx:id="ToggleHeurisitics" />
+            <ToggleGroup fx:id="ToggleHeuristics" />
          </toggleGroup></RadioButton>
 
 
@@ -65,14 +65,14 @@
       </Label>
 
 
-      <RadioButton id="HeuB" fx:id="HeuB" layoutX="827.0" layoutY="205.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="44.0" text="B" toggleGroup="$ToggleHeurisitics">
+      <RadioButton id="HeuB" fx:id="HeuB" layoutX="827.0" layoutY="205.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="44.0" text="B" toggleGroup="$ToggleHeuristics">
          <font>
             <Font size="18.0" />
          </font>
       </RadioButton>
 
 
-      <RadioButton id="HeuC" fx:id="HeuC" layoutX="886.0" layoutY="205.0" mnemonicParsing="false" text="C" toggleGroup="$ToggleHeurisitics">
+      <RadioButton id="HeuC" fx:id="HeuC" layoutX="886.0" layoutY="205.0" mnemonicParsing="false" text="C" toggleGroup="$ToggleHeuristics">
          <font>
             <Font size="18.0" />
          </font>
@@ -80,21 +80,21 @@
 
 
 
-      <RadioButton id="HeuD" fx:id="HeuD" layoutX="951.0" layoutY="205.0" mnemonicParsing="false" text="D" toggleGroup="$ToggleHeurisitics">
+      <RadioButton id="HeuD" fx:id="HeuD" layoutX="951.0" layoutY="205.0" mnemonicParsing="false" text="D" toggleGroup="$ToggleHeuristics">
          <font>
             <Font size="18.0" />
          </font>
       </RadioButton>
 
 
-      <RadioButton id="HeuE" fx:id="HeuE" layoutX="1016.0" layoutY="205.0" mnemonicParsing="false" text="E" toggleGroup="$ToggleHeurisitics">
+      <RadioButton id="HeuE" fx:id="HeuE" layoutX="1016.0" layoutY="205.0" mnemonicParsing="false" text="E" toggleGroup="$ToggleHeuristics">
          <font>
             <Font size="18.0" />
          </font>
       </RadioButton>
 
 
-      <RadioButton id="HeuF" fx:id="HeuF" layoutX="1081.0" layoutY="205.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="43.0" selected="true" text="F" toggleGroup="$ToggleHeurisitics">
+      <RadioButton id="HeuF" fx:id="HeuF" layoutX="1081.0" layoutY="205.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="43.0" selected="true" text="F" toggleGroup="$ToggleHeuristics">
          <font>
             <Font size="18.0" />
          </font>
@@ -104,14 +104,14 @@
       <Separator layoutX="708.0" layoutY="253.0" prefHeight="8.0" prefWidth="485.0" />
 
 
-      <Button id="playButton" fx:id="playButton" layoutX="784.0" layoutY="276.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="113.0" text="PLAY">
+      <Button id="playButton" fx:id="playButton" layoutX="784.0" layoutY="276.0" mnemonicParsing="false" onAction="#playButtonClicked" prefHeight="47.0" prefWidth="113.0" text="PLAY">
          <font>
             <Font size="18.0" />
          </font>
       </Button>
 
 
-      <Button id="stopButton" fx:id="stopButton" layoutX="995.0" layoutY="276.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="113.0" text="STOP">
+      <Button id="stopButton" fx:id="stopButton" layoutX="995.0" layoutY="276.0" mnemonicParsing="false" onAction="#stopGameClicked" prefHeight="47.0" prefWidth="113.0" text="STOP">
          <font>
             <Font size="18.0" />
          </font>
@@ -119,7 +119,9 @@
 
 
       <Separator layoutX="710.0" layoutY="346.0" prefHeight="8.0" prefWidth="485.0" />
-      <TextArea id="textArea" fx:id="textArea" editable="false" layoutX="705.0" layoutY="354.0" prefHeight="342.0" prefWidth="485.0" text="Welcome to Wumpus World Chess!&#10;Colors:&#10;&#9;Red = AI&#10;&#9;White = Human&#10;&#9;Green = Empty&#10;&#9;Black = Pit&#10;Heuristics:&#10;A :  &#9;# AI Pieces - # Human Pieces&#10;B :  &#9;100 (AI Win)&#10;&#9;-100 (Human Win)&#10;    &#9;0 (Draw)&#10;       &#9;-5 (# AI Pieces &lt; # Human Pieces)&#10;       &#9;5 (# AI Pieces &gt;= # Human Pieces)&#10;C:&#9;# AI Wumpus - # Human Wumpus&#10;D:&#9;# AI Hero - # Human Hero&#10;E:&#9;# AI Mage - # Human Mage&#10;F:&#9;MAX(A,B,C,D,E)&#10;&#10;">
+
+
+      <TextArea id="textArea" fx:id="textArea" editable="false" layoutX="705.0" layoutY="354.0" prefHeight="342.0" prefWidth="485.0" text="Welcome to Wumpus World Chess!&#10;Colors:&#10;&#9;Red = AI&#10;&#9;White = Human&#10;&#9;Green = Empty&#10;&#9;Black = Pit&#10;Heuristics:&#10;A :  &#9;# AI Pieces - # Human Pieces&#10;B :  &#9;100 (AI Win)&#10;&#9;-100 (Human Win)&#10;    &#9;0 (Draw)&#10;       &#9;-5 (# AI Pieces &lt; # Human Pieces)&#10;       &#9;5 (# AI Pieces &gt;= # Human Pieces)&#10;C:&#9;# AI Wumpus - # Human Wumpus&#10;D:&#9;# AI Hero - # Human Hero&#10;E:&#9;# AI Mage - # Human Mage&#10;F:&#9;MAX(A,B,C,D,E)">
          <font>
             <Font size="18.0" />
          </font>
