@@ -30,6 +30,8 @@ public class Controller {
     public boolean endSquareClicked;
     public int[] nextMove = new int[4];
 
+    public boolean gameStarted = false;
+
     @FXML
     public GridPane gridPane;
 
@@ -95,7 +97,7 @@ public class Controller {
             this.gridPane.setVgap(5);
             this.size = 3;
             this.board = new Board(size);
-            this.board.treeDepth = 8;
+            this.board.treeDepth = 7;
             if (HeuA.isSelected()) {
                 board.heuToUse = 1;
             } else if (HeuB.isSelected()) {
@@ -137,7 +139,7 @@ public class Controller {
             this.gridPane.setVgap(5);
             this.size = 9;
             this.board = new Board(size);
-            this.board.treeDepth = 4;
+            this.board.treeDepth = 3;
             if (HeuA.isSelected()) {
                 board.heuToUse = 1;
             } else if (HeuB.isSelected()) {
@@ -347,20 +349,22 @@ public class Controller {
         int realRow = r-1;
         int realCol = c-1;
         pane.setOnMouseClicked(e -> {
-            if (startSquareClicked == false) {
-                nextMove[0] = realRow;
-                nextMove[1] = realCol;
-                //System.out.println(" " + realRow + " , " + realCol);
-                startSquareClicked = true;
-            } else {
-                nextMove[2] = realRow;
-                nextMove[3] = realCol;
-                endSquareClicked = true;
-                //System.out.println(" " + realRow + " , " + realCol);
-                try {
-                    makeHumanMove();
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
+            if (gameStarted == true) {
+                if (startSquareClicked == false) {
+                    nextMove[0] = realRow;
+                    nextMove[1] = realCol;
+                    //System.out.println(" " + realRow + " , " + realCol);
+                    startSquareClicked = true;
+                } else {
+                    nextMove[2] = realRow;
+                    nextMove[3] = realCol;
+                    endSquareClicked = true;
+                    //System.out.println(" " + realRow + " , " + realCol);
+                    try {
+                        makeHumanMove();
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
@@ -370,14 +374,17 @@ public class Controller {
         if (board.aiHasWon()) {
             textArea.appendText("\n\nAI WINS!");
             playButton.setDisable(false);
+            gameStarted = false;
             return;
         } else if (board.manHasWon()) {
             textArea.appendText("\n\nHUMAN WINS!");
             playButton.setDisable(false);
+            gameStarted = false;
             return;
         } else if (board.draw()) {
             textArea.appendText("\n\nDRAW!");
             playButton.setDisable(false);
+            gameStarted = false;
             return;
         }
 
@@ -385,6 +392,7 @@ public class Controller {
         if (nextMove[0] == -1) {
             textArea.appendText("\nHUMAN HAS STOPPED THE GAME");
             playButton.setDisable(false);
+            gameStarted = false;
             return;
         } else {
             if (board.nextMove(nextMove,1)) {
@@ -424,14 +432,17 @@ public class Controller {
         if (board.aiHasWon()) {
             textArea.appendText("\n\nAI WINS!");
             playButton.setDisable(false);
+            gameStarted = false;
             return;
         } else if (board.manHasWon()) {
             textArea.appendText("\n\nHUMAN WINS!");
             playButton.setDisable(false);
+            gameStarted = false;
             return;
         } else if (board.draw()) {
             textArea.appendText("\n\nDRAW!");
             playButton.setDisable(false);
+            gameStarted = false;
             return;
         }
         int[] aiMove = board.findNextBestMove();
@@ -452,14 +463,17 @@ public class Controller {
         if (board.aiHasWon()) {
             textArea.appendText("\n\nAI WINS!");
             playButton.setDisable(false);
+            gameStarted = false;
             return;
         } else if (board.manHasWon()) {
             textArea.appendText("\n\nHUMAN WINS!");
             playButton.setDisable(false);
+            gameStarted = false;
             return;
         } else if (board.draw()) {
             textArea.appendText("\n\nDRAW!");
             playButton.setDisable(false);
+            gameStarted = false;
             return;
         }
 
@@ -470,6 +484,7 @@ public class Controller {
         nextMove[0] = -1;
         startSquareClicked = true;
         endSquareClicked = true;
+        gameStarted = false;
         makeHumanMove();
     }
 
@@ -487,6 +502,7 @@ public class Controller {
         nextMove[3] = 0;
         startSquareClicked = false;
         endSquareClicked = false;
+        gameStarted = true;
 
     }
 

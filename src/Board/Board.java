@@ -446,14 +446,7 @@ public class Board {
         }
         if (isMaximizer) { // it is the AI
 
-            PriorityQueue<int[]> nextAvailableMoves = new PriorityQueue<>(new Comparator<int[]>(){
-                // [0] is row
-                // [1] is col
-                // [2] is heurisitc val
-                public int compare(int[] one, int[] two) {
-                    return Integer.compare(two[4], one[4]);
-                }
-            });
+            PriorityQueue<int[]> nextAvailableMoves = new PriorityQueue<>((one, two) -> Integer.compare(two[4], one[4])); // max heap
 
 
             int value = Integer.MIN_VALUE;
@@ -518,14 +511,7 @@ public class Board {
             return value;
         } else { // human
 
-            PriorityQueue<int[]> nextAvailableMoves = new PriorityQueue<>(new Comparator<int[]>(){
-                // [0] is row
-                // [1] is col
-                // [2] is heurisitc val
-                public int compare(int[] one, int[] two) {
-                    return Integer.compare(two[4], one[4]);
-                }
-            });
+            PriorityQueue<int[]> nextAvailableMoves = new PriorityQueue<>((one, two) -> Integer.compare(two[4], one[4])); // max heap
 
             int value = Integer.MAX_VALUE;
             // get all the Humans's pieces and run minimax on each one with specified depth
@@ -588,18 +574,13 @@ public class Board {
     } // ends the minimax() method
 
 
-    /**
-     * This method is the first heuristic for minimax.
-     * @return the difference in number of pieces between the AI and human
-     */
     public int A() {
-        return getNumAIPieces() - getNumManPieces();        
+        return getNumAIPieces() - getNumManPieces();
     } // ends the A() method
 
-    /**
-     * This is the second heurisitc.
-     * @return value
-     */
+
+
+    // try to have more pieces than human
     public int B() {
         if (aiHasWon()) {
             return 100;
@@ -611,26 +592,32 @@ public class Board {
             return 0;
         }
         if (getNumAIPieces() < getNumManPieces()) {
-            return -5;
+            return -50;
         } else {
-            return 5;
+            return 50;
         }
     }
     
-    //heuristic 3 prioritizes wumpus
+
     public int C(){
         return this.getNumSpecific(1, 0) - this.getNumSpecific(1, 1);
+
     }
+
 
     //heruistic 4 prioritizes hero
     public int D(){
         return this.getNumSpecific(2, 0) - this.getNumSpecific(2, 1);
     }
 
+
+
     //heuristic 5 prioritizes mage
     public int E(){
         return this.getNumSpecific(3, 0) - this.getNumSpecific(3, 1);
     }
+
+
 
     //heuristic 6 returns the max of all previous heuristics
     public int F(){
@@ -642,6 +629,7 @@ public class Board {
         heap.offer(this.E());
         return heap.peek();
     }
+
 
 
     /**
