@@ -516,7 +516,7 @@ public class Board {
                 move[3] = curBestNeighbor[3];
                 nextMove(move, 0);
                 //System.out.println("Pulling: (" + move[0] + " , " + move[1] + ") ==> ("+ move[2] + " , " + move[3] + ")");
-                value += Integer.max(value, minimax(alpha, beta, !isMaximizer, heu, curDepth-1));
+                value = Integer.max(value, minimax(alpha, beta, !isMaximizer, heu, curDepth-1));
                 alpha = Integer.max(alpha, value);
                 if (alpha >= beta) {
                     reverse();
@@ -577,7 +577,7 @@ public class Board {
                 move[3] = curBestNeighbor[3];
                 nextMove(move, 1);
                 //System.out.println("Pulling: (" + move[0] + " , " + move[1] + ") ==> ("+ move[2] + " , " + move[3] + ")");
-                value -= Integer.min(value, minimax(alpha, beta, !isMaximizer, heu, curDepth-1));
+                value = Integer.min(value, minimax(alpha, beta, !isMaximizer, heu, curDepth-1));
                 beta = Integer.min(beta, value);
                 if (beta <= alpha) {
                     reverse();

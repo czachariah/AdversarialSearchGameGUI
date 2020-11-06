@@ -97,7 +97,7 @@ public class Controller {
             this.gridPane.setVgap(5);
             this.size = 3;
             this.board = new Board(size);
-            this.board.treeDepth = 5;
+            this.board.treeDepth = 7;
             if (HeuA.isSelected()) {
                 board.heuToUse = 1;
             } else if (HeuB.isSelected()) {
@@ -139,7 +139,7 @@ public class Controller {
             this.gridPane.setVgap(5);
             this.size = 9;
             this.board = new Board(size);
-            this.board.treeDepth = 3;
+            this.board.treeDepth = 4;
             if (HeuA.isSelected()) {
                 board.heuToUse = 1;
             } else if (HeuB.isSelected()) {
