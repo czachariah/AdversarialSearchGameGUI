@@ -391,6 +391,9 @@ public class Board {
         int[] curMove = new int[4];             // current move to look at
         int curMoveVal = Integer.MIN_VALUE;
         int bestMoveVal = Integer.MIN_VALUE;
+
+        PriorityQueue<int[]> nextAvailableMoves = new PriorityQueue<>((one, two) -> Integer.compare(two[4], one[4])); // max heap
+
         // get all the AI's pieces and run minimax on each one with specified depth
         List<int[]> pieces = getCurrentAIPieces();
         for (int[] piece : pieces) {
@@ -403,7 +406,9 @@ public class Board {
                 curMove[2] = neighbor[0];
                 curMove[3] = neighbor[1];
                 if (nextMove(curMove, 0)) { // make AI move, then put into minimax
-                    curMoveVal = minimax(Integer.MIN_VALUE, Integer.MAX_VALUE, true, heuToUse , treeDepth); 
+                    //treeDepth = getNumAIPieces();
+                    curMoveVal = minimax(Integer.MIN_VALUE, Integer.MAX_VALUE, true, heuToUse , treeDepth);
+                    System.out.println(bestMoveVal + " | " + curMoveVal + " = (" + curMove[0] + " , " + curMove[1] + ") -> (" + curMove[2] + " , " + curMove[3] + ")");
                     reverse();
                     if (curMoveVal > bestMoveVal) {
                         bestMoveVal = curMoveVal;
@@ -412,11 +417,23 @@ public class Board {
                         bestMove[2] = curMove[2];
                         bestMove[3] = curMove[3];
                     }
+
                 }
             }
         }
+        System.out.println("\n");
         return bestMove;
     } // ends the findNextBestMove() method
+
+    /*
+    if (curMoveVal > bestMoveVal) {
+                        bestMoveVal = curMoveVal;
+                        bestMove[0] = curMove[0];
+                        bestMove[1] = curMove[1];
+                        bestMove[2] = curMove[2];
+                        bestMove[3] = curMove[3];
+                    }
+     */
 
 
     /**
@@ -499,7 +516,7 @@ public class Board {
                 move[3] = curBestNeighbor[3];
                 nextMove(move, 0);
                 //System.out.println("Pulling: (" + move[0] + " , " + move[1] + ") ==> ("+ move[2] + " , " + move[3] + ")");
-                value = Integer.max(value, minimax(alpha, beta, !isMaximizer, heu, curDepth-1));
+                value += Integer.max(value, minimax(alpha, beta, !isMaximizer, heu, curDepth-1));
                 alpha = Integer.max(alpha, value);
                 if (alpha >= beta) {
                     reverse();
@@ -560,7 +577,7 @@ public class Board {
                 move[3] = curBestNeighbor[3];
                 nextMove(move, 1);
                 //System.out.println("Pulling: (" + move[0] + " , " + move[1] + ") ==> ("+ move[2] + " , " + move[3] + ")");
-                value = Integer.min(value, minimax(alpha, beta, !isMaximizer, heu, curDepth-1));
+                value -= Integer.min(value, minimax(alpha, beta, !isMaximizer, heu, curDepth-1));
                 beta = Integer.min(beta, value);
                 if (beta <= alpha) {
                     reverse();
@@ -575,8 +592,59 @@ public class Board {
 
 
     public int A() {
-        return getNumAIPieces() - getNumManPieces();
+
+        //return getNumAIPieces() - getNumManPieces();  // OLD A
+
+        if (aiHasWon()) {
+            return 1000;
+        }
+        if (manHasWon()) {
+            return -1000;
+        }
+        if (draw()) {
+            return 0;
+        }
+
+        // see if there are any pieces that they can kill immediately
+        int totalPoints = 0;
+        List<int[]> pieces = getCurrentAIPieces();
+        for (int[] piece : pieces) {
+            List<int[]> neighbors = getNeighbors(piece);
+            for (int[] neighbor : neighbors) {
+                if (moveResult(new int[]{piece[0],piece[1],neighbor[0],neighbor[1]}) == 1) {
+                    totalPoints += 150;
+                } else if (moveResult(new int[]{piece[0],piece[1],neighbor[0],neighbor[1]}) == 0) {
+                    totalPoints += 100;
+                } else {
+                    totalPoints -= 50;
+                }
+            }
+        }
+
+
+        pieces = getCurrentAIPieces();
+        List<int[]> humanPieces = getCurrentHumanPieces();
+        for (int[] piece : pieces) {
+            for (int[] manPiece : humanPieces) {
+                if (moveResult(new int[]{piece[0],piece[1],manPiece[0],manPiece[1]}) == 1) {
+                    totalPoints += 150 / distanceBetween(new int[]{piece[0],piece[1],manPiece[0],manPiece[1]});
+                }  else if (moveResult(new int[]{piece[0],piece[1],manPiece[0],manPiece[1]}) == 0) {
+                    totalPoints += 100 / distanceBetween(new int[]{piece[0],piece[1],manPiece[0],manPiece[1]});
+                } else {
+                    totalPoints -= 50 / distanceBetween(new int[]{piece[0],piece[1],manPiece[0],manPiece[1]});
+                }
+            }
+        }
+
+
+        return totalPoints;
+
     } // ends the A() method
+
+    // get euclidean distance
+    public int distanceBetween(int[] points) {
+        return (int)(Math.sqrt(((points[0]-points[2])*(points[0]-points[2]) + ((points[1]-points[3])*(points[1]-points[3])))));
+    }
 
 
 

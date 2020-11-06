@@ -49,7 +49,7 @@
       <Separator layoutX="708.0" layoutY="127.0" prefHeight="8.0" prefWidth="485.0" />
 
 
-      <RadioButton id="HeuA" fx:id="HeuA" layoutX="762.0" layoutY="205.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="42.0" text="A">
+      <RadioButton id="HeuA" fx:id="HeuA" layoutX="762.0" layoutY="205.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="42.0" selected="true" text="A">
          <font>
             <Font size="18.0" />
          </font>
@@ -94,7 +94,7 @@
       </RadioButton>
 
 
-      <RadioButton id="HeuF" fx:id="HeuF" layoutX="1081.0" layoutY="205.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="43.0" selected="true" text="F" toggleGroup="$ToggleHeuristics">
+      <RadioButton id="HeuF" fx:id="HeuF" layoutX="1081.0" layoutY="205.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="43.0" text="F" toggleGroup="$ToggleHeuristics">
          <font>
             <Font size="18.0" />
          </font>
