@@ -189,19 +189,19 @@ public class Controller {
                     pane.getChildren().addAll(rect,text);
                 } else if (square.type == 1) {
                     pane = new StackPane();
-                    text = new Label("WUMPUS");
-                    text.setFont(new Font(40));
+                    text = new Label("W\nP(W): " + 2.0 + "\nP(H): " + 3 + "\nP(M): " + 4 + "\nP(P): "+ 5);
+                    text.setFont(new Font(30));
                     rect = new Rectangle(222, 222, color); // entire grid made up of rectangles
                     pane.getChildren().addAll(rect,text);
                 } else if (square.type == 2) {
                     pane = new StackPane();
-                    text = new Label("HERO");
+                    text = new Label("H");
                     text.setFont(new Font(40));
                     rect = new Rectangle(222, 222, color); // entire grid made up of rectangles
                     pane.getChildren().addAll(rect,text);
                 } else if (square.type == 3) {
                     pane = new StackPane();
-                    text = new Label("MAGE");
+                    text = new Label("M");
                     text.setFont(new Font(40));
                     rect = new Rectangle(222, 222, color); // entire grid made up of rectangles
                     pane.getChildren().addAll(rect,text);
@@ -250,8 +250,10 @@ public class Controller {
                     pane.getChildren().addAll(rect,text);
                 } else if (square.type == 1) {
                     pane = new StackPane();
-                    text = new Label("WUMPUS");
-                    text.setFont(new Font(20));
+                    text = new Label("W\nP(W): " + 2.0 + "\nP(H): " + 3 + "\nP(M): " + 4 + "\nP(P): "+ 5);
+                    text.setFont(new Font(15));
+                    //text = new Label("WUMPUS");
+                    //text.setFont(new Font(20));
                     rect = new Rectangle(110, 110, color); // entire grid made up of rectangles
                     pane.getChildren().addAll(rect,text);
                 } else if (square.type == 2) {
@@ -313,8 +315,10 @@ public class Controller {
                     pane.getChildren().addAll(rect,text);
                 } else if (square.type == 1) {
                     pane = new StackPane();
-                    text = new Label("WUMPUS");
-                    text.setFont(new Font(15));
+                    text = new Label("W\nP(W): " + 2.123 + "\nP(H): " + 3 + "\nP(M): " + 4 + "\nP(P): "+ 5);
+                    text.setFont(new Font(12));
+                    //text = new Label("WUMPUS");
+                    //text.setFont(new Font(15));
                     rect = new Rectangle(70, 70, color); // entire grid made up of rectangles
                     pane.getChildren().addAll(rect,text);
                 } else if (square.type == 2) {
