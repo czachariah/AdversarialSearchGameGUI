@@ -410,12 +410,20 @@ public class Board {
                     curMoveVal = minimax(Integer.MIN_VALUE, Integer.MAX_VALUE, true, heuToUse , treeDepth);
                     System.out.println(bestMoveVal + " | " + curMoveVal + " = (" + curMove[0] + " , " + curMove[1] + ") -> (" + curMove[2] + " , " + curMove[3] + ")");
                     reverse();
-                    if (curMoveVal > bestMoveVal) {
+                    if (curMoveVal != -1000 && curMoveVal > bestMoveVal) {
                         bestMoveVal = curMoveVal;
                         bestMove[0] = curMove[0];
                         bestMove[1] = curMove[1];
                         bestMove[2] = curMove[2];
                         bestMove[3] = curMove[3];
+                    }
+                    if (curMoveVal == 1000) {
+                        bestMoveVal = curMoveVal;
+                        bestMove[0] = curMove[0];
+                        bestMove[1] = curMove[1];
+                        bestMove[2] = curMove[2];
+                        bestMove[3] = curMove[3];
+                        return bestMove;
                     }
 
                 }
@@ -516,7 +524,7 @@ public class Board {
                 move[3] = curBestNeighbor[3];
                 nextMove(move, 0);
                 //System.out.println("Pulling: (" + move[0] + " , " + move[1] + ") ==> ("+ move[2] + " , " + move[3] + ")");
-                value = Integer.max(value, minimax(alpha, beta, !isMaximizer, heu, curDepth-1));
+                value += Integer.max(value, minimax(alpha, beta, !isMaximizer, heu, curDepth-1));
                 alpha = Integer.max(alpha, value);
                 if (alpha >= beta) {
                     reverse();
