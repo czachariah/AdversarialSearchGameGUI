@@ -141,7 +141,11 @@ public class Controller {
             } else {
                 board.heuToUse = 6;
             }
-            colorBoard6();
+            if (FogOfWarButton.isSelected()) {
+                colorBoard6WithFog();
+            } else {
+                colorBoard6();
+            }
         } else {
             this.gridPane.setPadding(new Insets(5));
             this.gridPane.setHgap(5);
@@ -162,9 +166,17 @@ public class Controller {
             } else {
                 board.heuToUse = 6;
             }
-            colorBoard9();
+            if (FogOfWarButton.isSelected()) {
+                colorBoard9WithFog();
+            } else {
+                colorBoard9();
+            }
         }
     } // ends the initializeGridGUI() method
+
+
+
+
 
 
 
@@ -235,6 +247,10 @@ public class Controller {
             } // ends inner for-loop
         } // ends outer-for loop
     } // ends the colorBoard3() method
+
+
+
+
 
 
 
@@ -365,6 +381,9 @@ public class Controller {
 
 
 
+
+
+
     // method to color the 6x6 grid (NORMAL)
     public void colorBoard6() {
         this.gridPane.getChildren().clear();
@@ -398,8 +417,8 @@ public class Controller {
                     pane.getChildren().addAll(rect,text);
                 } else if (square.type == 1) {
                     pane = new StackPane();
-                    text = new Label("W\nP(W): " + 2.0 + "\nP(H): " + 3 + "\nP(M): " + 4 + "\nP(P): "+ 5);
-                    text.setFont(new Font(15));
+                    text = new Label("WUMPUS");
+                    text.setFont(new Font(20));
                     //text = new Label("WUMPUS");
                     //text.setFont(new Font(20));
                     rect = new Rectangle(110, 110, color); // entire grid made up of rectangles
@@ -428,6 +447,130 @@ public class Controller {
             } // ends inner for-loop
         } // ends outer-for loop
     } // end the colorBoard6() method
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // method to color the 6x6 board (FOG OF WAR)
+    public void colorBoard6WithFog() {
+        this.gridPane.getChildren().clear();
+
+        Rectangle rect;
+        Piece square;
+        Color color = Color.BLACK;
+        Piece[][] arr = board.board;
+
+        for (int r = 1; r <= size; r++) {
+            for (int c = 1; c <= size; c++) {
+                square = arr[r-1][c-1];
+
+                if (square.color == 1) {    // human will be white
+                    color = Color.WHITE;
+
+                    StackPane pane = new StackPane();
+                    Label text = new Label("PIT");
+
+                    if (square.type == 1) {
+                        pane = new StackPane();
+                        String textForLabel = "WUMPUS";
+                        if (square.hasStench) {
+                            textForLabel += "\nS";
+                        }
+                        if (square.hasNoise) {
+                            textForLabel += "\nN";
+                        }
+                        if (square.hasHeat) {
+                            textForLabel += "\nHE";
+                        }
+                        if (square.hasBreeze) {
+                            textForLabel += "\nB";
+                        }
+                        text = new Label(textForLabel);
+                        text.setFont(new Font(15));
+                        rect = new Rectangle(110, 110, color); // entire grid made up of rectangles
+                        pane.getChildren().addAll(rect,text);
+                    } else if (square.type == 2) {
+                        pane = new StackPane();
+                        String textForLabel = "HERO";
+                        if (square.hasStench) {
+                            textForLabel += "\nS";
+                        }
+                        if (square.hasNoise) {
+                            textForLabel += "\nN";
+                        }
+                        if (square.hasHeat) {
+                            textForLabel += "\nHE";
+                        }
+                        if (square.hasBreeze) {
+                            textForLabel += "\nB";
+                        }
+                        text = new Label(textForLabel);
+                        text.setFont(new Font(15));
+                        rect = new Rectangle(110, 110, color); // entire grid made up of rectangles
+                        pane.getChildren().addAll(rect,text);
+                    } else if (square.type == 3) {
+                        pane = new StackPane();
+                        String textForLabel = "MAGE";
+                        if (square.hasStench) {
+                            textForLabel += "\nS";
+                        }
+                        if (square.hasNoise) {
+                            textForLabel += "\nN";
+                        }
+                        if (square.hasHeat) {
+                            textForLabel += "\nHE";
+                        }
+                        if (square.hasBreeze) {
+                            textForLabel += "\nB";
+                        }
+                        text = new Label(textForLabel);
+                        text.setFont(new Font(15));
+                        rect = new Rectangle(110, 110, color); // entire grid made up of rectangles
+                        pane.getChildren().addAll(rect,text);
+                    } else {}
+                    addClick(pane,c,r);
+                    gridPane.add(pane, c, r);
+                } else {    // everything else is red
+                    color = Color.RED;
+
+                    StackPane pane = new StackPane();
+                    Label text = new Label("PIT");
+
+                    pane = new StackPane();
+                    String textForLabel = "";
+
+                    textForLabel += "P(W): " + square.probWumpus;
+                    textForLabel += "\nP(H): " + square.probHero;
+                    textForLabel += "\nP(M): " + square.probMage;
+                    textForLabel += "\nP(P): " + square.probPit;
+
+                    text = new Label(textForLabel);
+                    text.setFont(new Font(15));
+                    rect = new Rectangle(110, 110, color); // entire grid made up of rectangles
+                    pane.getChildren().addAll(rect,text);
+
+                    addClick(pane,c,r);
+                    gridPane.add(pane, c, r);
+                }
+            } // ends inner for-loop
+        } // ends outer-for loop
+    } // ends the colorBoard6WithFog() method
+
+
+
+
+
+
 
 
 
@@ -472,8 +615,8 @@ public class Controller {
                     pane.getChildren().addAll(rect,text);
                 } else if (square.type == 1) {
                     pane = new StackPane();
-                    text = new Label("W\nP(W): " + 2.123 + "\nP(H): " + 3 + "\nP(M): " + 4 + "\nP(P): "+ 5);
-                    text.setFont(new Font(12));
+                    text = new Label("WUMPUS");
+                    text.setFont(new Font(15));
                     //text = new Label("WUMPUS");
                     //text.setFont(new Font(15));
                     rect = new Rectangle(70, 70, color); // entire grid made up of rectangles
@@ -507,6 +650,115 @@ public class Controller {
 
 
 
+
+
+
+
+
+    // method to color the 9x9 board (FOG OF WAR)
+    public void colorBoard9WithFog() {
+        this.gridPane.getChildren().clear();
+
+        Rectangle rect;
+        Piece square;
+        Color color = Color.BLACK;
+        Piece[][] arr = board.board;
+
+        for (int r = 1; r <= size; r++) {
+            for (int c = 1; c <= size; c++) {
+                square = arr[r-1][c-1];
+
+                if (square.color == 1) {    // human will be white
+                    color = Color.WHITE;
+
+                    StackPane pane = new StackPane();
+                    Label text = new Label("PIT");
+
+                    if (square.type == 1) {
+                        pane = new StackPane();
+                        String textForLabel = "WUMPUS";
+                        if (square.hasStench) {
+                            textForLabel += "\nS";
+                        }
+                        if (square.hasNoise) {
+                            textForLabel += "\nN";
+                        }
+                        if (square.hasHeat) {
+                            textForLabel += "\nHE";
+                        }
+                        if (square.hasBreeze) {
+                            textForLabel += "\nB";
+                        }
+                        text = new Label(textForLabel);
+                        text.setFont(new Font(12));
+                        rect = new Rectangle(70, 70, color); // entire grid made up of rectangles
+                        pane.getChildren().addAll(rect,text);
+                    } else if (square.type == 2) {
+                        pane = new StackPane();
+                        String textForLabel = "HERO";
+                        if (square.hasStench) {
+                            textForLabel += "\nS";
+                        }
+                        if (square.hasNoise) {
+                            textForLabel += "\nN";
+                        }
+                        if (square.hasHeat) {
+                            textForLabel += "\nHE";
+                        }
+                        if (square.hasBreeze) {
+                            textForLabel += "\nB";
+                        }
+                        text = new Label(textForLabel);
+                        text.setFont(new Font(12));
+                        rect = new Rectangle(70, 70, color); // entire grid made up of rectangles
+                        pane.getChildren().addAll(rect,text);
+                    } else if (square.type == 3) {
+                        pane = new StackPane();
+                        String textForLabel = "MAGE";
+                        if (square.hasStench) {
+                            textForLabel += "\nS";
+                        }
+                        if (square.hasNoise) {
+                            textForLabel += "\nN";
+                        }
+                        if (square.hasHeat) {
+                            textForLabel += "\nHE";
+                        }
+                        if (square.hasBreeze) {
+                            textForLabel += "\nB";
+                        }
+                        text = new Label(textForLabel);
+                        text.setFont(new Font(12));
+                        rect = new Rectangle(70, 70, color); // entire grid made up of rectangles
+                        pane.getChildren().addAll(rect,text);
+                    } else {}
+                    addClick(pane,c,r);
+                    gridPane.add(pane, c, r);
+                } else {    // everything else is red
+                    color = Color.RED;
+
+                    StackPane pane = new StackPane();
+                    Label text = new Label("PIT");
+
+                    pane = new StackPane();
+                    String textForLabel = "";
+
+                    textForLabel += "P(W): " + square.probWumpus;
+                    textForLabel += "\nP(H): " + square.probHero;
+                    textForLabel += "\nP(M): " + square.probMage;
+                    textForLabel += "\nP(P): " + square.probPit;
+
+                    text = new Label(textForLabel);
+                    text.setFont(new Font(12));
+                    rect = new Rectangle(70, 70, color); // entire grid made up of rectangles
+                    pane.getChildren().addAll(rect,text);
+
+                    addClick(pane,c,r);
+                    gridPane.add(pane, c, r);
+                }
+            } // ends inner for-loop
+        } // ends outer-for loop
+    } // ends the colorBoard9WithFog() method
 
 
 
@@ -596,15 +848,29 @@ public class Controller {
                     makeAIMove();
                     return;
                 } else if (size == 6) {
-                    printHumanMove(nextMove);
-                    colorBoard6();
+                    //printHumanMove(nextMove);
+                    //colorBoard6();
+                    if (FogOfWarButton.isSelected()) {
+                        printHumanMove(nextMove);
+                        colorBoard6WithFog();
+                    } else {
+                        printHumanMove(nextMove);
+                        colorBoard6();
+                    }
                     startSquareClicked = false;
                     endSquareClicked = false;
                     makeAIMove();
                     return;
                 } else {
-                    printHumanMove(nextMove);
-                    colorBoard9();
+                    //printHumanMove(nextMove);
+                    //colorBoard9();
+                    if (FogOfWarButton.isSelected()) {
+                        printHumanMove(nextMove);
+                        colorBoard9WithFog();
+                    } else {
+                        printHumanMove(nextMove);
+                        colorBoard9();
+                    }
                     startSquareClicked = false;
                     endSquareClicked = false;
                     makeAIMove();
@@ -663,11 +929,23 @@ public class Controller {
             }
             //colorBoard3();
         } else if (size == 6) {
-            printAIMove(aiMove);
-            colorBoard6();
+            //printAIMove(aiMove);
+            //colorBoard6();
+            if (FogOfWarButton.isSelected()) {
+                colorBoard6WithFog();
+            } else {
+                printAIMove(aiMove);
+                colorBoard6();
+            }
         } else {
-            printAIMove(aiMove);
-            colorBoard9();
+            //printAIMove(aiMove);
+            //colorBoard9();
+            if (FogOfWarButton.isSelected()) {
+                colorBoard9WithFog();
+            } else {
+                printAIMove(aiMove);
+                colorBoard9();
+            }
         }
 
         if (board.aiHasWon()) {
@@ -714,9 +992,21 @@ public class Controller {
     // method that will turn the Fog of War on or off
     public void FogOfWarButtonClicked() {
         if (FogOfWarButton.isSelected()) {
-            colorBoard3WithFog();
+            if (size == 3) {
+                colorBoard3WithFog();
+            } else if (size == 6) {
+                colorBoard6WithFog();
+            } else {
+                colorBoard9WithFog();
+            }
         } else {
-            colorBoard3();
+            if (size == 3) {
+                colorBoard3();
+            } else if (size == 6) {
+                colorBoard6();
+            } else {
+                colorBoard9();
+            }
         }
     } // ends the FogOfWarButtonClicked() method
 
