@@ -129,7 +129,7 @@
 
 
 
-      <ToggleButton id="FogOfWarButton" fx:id="FogOfWarButton" layoutX="885.0" layoutY="276.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="136.0" text="FOG OF WAR" textAlignment="CENTER">
+      <ToggleButton id="FogOfWarButton" fx:id="FogOfWarButton" layoutX="885.0" layoutY="276.0" mnemonicParsing="false" onAction="#FogOfWarButtonClicked" prefHeight="47.0" prefWidth="136.0" text="FOG OF WAR" textAlignment="CENTER">
          <font>
             <Font size="18.0" />
          </font>

@@ -30,7 +30,7 @@ public class Board {
         this.board = new Piece[size][size];
         for (int i = 0 ; i < size ; ++i) {
             for (int j = 0; j < size ; ++j) {
-                this.board[i][j] = new Piece(i, j, 4, 2); // initialize everything as an empty space and as color green
+                this.board[i][j] = new Piece(i, j, 4, 2,0,0,0,0,false,false,false,false); // initialize everything as an empty space and as color green
             }
         }
         initBoard();
@@ -42,6 +42,24 @@ public class Board {
     public void initBoard() {
         int curType = 1;                    // use this to determine which piece is to be placed on the board
         for(int i = 0 ; i < size ; ++i) {   // initialize the top row (for the AI)
+
+            if (curType == 1) {
+                this.board[0][i].probWumpus = 1.0;
+                this.board[0][i].probHero = 0.0;
+                this.board[0][i].probMage = 0.0;
+                this.board[0][i].probPit = 0.0;
+            } else if (curType == 2) {
+                this.board[0][i].probWumpus = 0.0;
+                this.board[0][i].probHero = 1.0;
+                this.board[0][i].probMage = 0.0;
+                this.board[0][i].probPit = 0.0;
+            } else {
+                this.board[0][i].probWumpus = 0.0;
+                this.board[0][i].probHero = 0.0;
+                this.board[0][i].probMage = 1.0;
+                this.board[0][i].probPit = 0.0;
+            }
+
             this.board[0][i].type = curType;
             this.board[0][i].color = 0;          // red for AI
             ++curType;

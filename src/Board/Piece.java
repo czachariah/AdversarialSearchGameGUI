@@ -7,10 +7,23 @@ package Board;
 public class Piece {
 
     // Global Variables
-    public int x;           // this is the x (row) coordinate
-    public int y;           // this is the y (column) coordinate
-    public int type;        // this is the type of the piece
-    public int color;       // this is the color of the piece
+    public int x;               // this is the x (row) coordinate
+    public int y;               // this is the y (column) coordinate
+    public int type;            // this is the type of the piece
+    public int color;           // this is the color of the piece
+
+    public double probWumpus;   // probability piece is a wumpus
+    public double probHero;      // probability piece is a hero
+    public double probMage;     // probability piece is a mage
+    public double probPit;      // probability piece is a pit
+
+
+    public boolean hasStench;   // there is at least one Wumpus neighbor
+    public boolean hasNoise;    // there is at least one Hero neighbor
+    public boolean hasHeat;     // there is at least one Mage neighbor
+    public boolean hasBreeze;   // there is at least one Pit neighbor
+
+
 
     /**
      * This is the constructor of the Piece class.
@@ -19,11 +32,19 @@ public class Piece {
      * @param type the type of the piece
      * @param color the color of the piece
      */
-    public Piece(int x , int y , int type , int color) {
+    public Piece(int x , int y , int type , int color, double probWumpus, double probHero, double probMage, double probPit, boolean hasStench, boolean hasNoise, boolean hasHeat, boolean hasBreeze) {
         this.x = x;
         this.y = y;
         this.type = type;
         this.color = color;
+        this.probWumpus = probWumpus;
+        this.probHero = probHero;
+        this.probMage = probMage;
+        this.probPit = probPit;
+        this.hasStench = hasStench;
+        this.hasNoise = hasNoise;
+        this.hasHeat = hasHeat;
+        this.hasBreeze = hasBreeze;
     } // ends the Piece() constructor
 
     /*

@@ -77,7 +77,8 @@ public class Controller {
     @FXML
     public TextArea textArea;
 
-    // not going to need a constructor for this class since, the sizes and stuff will change based on the choices
+    @FXML
+    public ToggleButton FogOfWarButton;
 
 
     /**
@@ -89,6 +90,8 @@ public class Controller {
     } // ends the initialize() method
 
 
+
+    // method to initialize the grid
     public void initializeGridGUI(GridPane gridPane) { // default will be a board of size 3
         this.gridPane = gridPane;
         if (Size3.isSelected()) {
@@ -111,7 +114,13 @@ public class Controller {
             } else {
                 board.heuToUse = 6;
             }
-            colorBoard3();
+
+            if (FogOfWarButton.isSelected()) {
+                colorBoard3WithFog();
+            } else {
+                colorBoard3();
+            }
+
         } else if (Size6.isSelected()) {
             this.gridPane.setPadding(new Insets(5));
             this.gridPane.setHgap(5);
@@ -155,8 +164,17 @@ public class Controller {
             }
             colorBoard9();
         }
-    }
+    } // ends the initializeGridGUI() method
 
+
+
+
+
+
+
+
+
+    // method to color the 3x3 board (NORMAL)
     public void colorBoard3() {
         this.gridPane.getChildren().clear();
 
@@ -189,19 +207,19 @@ public class Controller {
                     pane.getChildren().addAll(rect,text);
                 } else if (square.type == 1) {
                     pane = new StackPane();
-                    text = new Label("W\nP(W): " + 2.0 + "\nP(H): " + 3 + "\nP(M): " + 4 + "\nP(P): "+ 5);
-                    text.setFont(new Font(30));
+                    text = new Label("WUMPUS");
+                    text.setFont(new Font(40));
                     rect = new Rectangle(222, 222, color); // entire grid made up of rectangles
                     pane.getChildren().addAll(rect,text);
                 } else if (square.type == 2) {
                     pane = new StackPane();
-                    text = new Label("H");
+                    text = new Label("HERO");
                     text.setFont(new Font(40));
                     rect = new Rectangle(222, 222, color); // entire grid made up of rectangles
                     pane.getChildren().addAll(rect,text);
                 } else if (square.type == 3) {
                     pane = new StackPane();
-                    text = new Label("M");
+                    text = new Label("MAGE");
                     text.setFont(new Font(40));
                     rect = new Rectangle(222, 222, color); // entire grid made up of rectangles
                     pane.getChildren().addAll(rect,text);
@@ -216,8 +234,138 @@ public class Controller {
                 gridPane.add(pane, c, r);
             } // ends inner for-loop
         } // ends outer-for loop
-    }
+    } // ends the colorBoard3() method
 
+
+
+
+
+
+
+
+
+
+
+    // method to color the 3x3 board (FOG OF WAR)
+    public void colorBoard3WithFog() {
+        this.gridPane.getChildren().clear();
+
+        Rectangle rect;
+        Piece square;
+        Color color = Color.BLACK;
+        Piece[][] arr = board.board;
+
+        for (int r = 1; r <= size; r++) {
+            for (int c = 1; c <= size; c++) {
+                square = arr[r-1][c-1];
+
+                if (square.color == 1) {    // human will be white
+                    color = Color.WHITE;
+
+                    StackPane pane = new StackPane();
+                    Label text = new Label("PIT");
+
+                    if (square.type == 1) {
+                        pane = new StackPane();
+                        String textForLabel = "WUMPUS";
+                        if (square.hasStench) {
+                            textForLabel += "\nS";
+                        }
+                        if (square.hasNoise) {
+                            textForLabel += "\nN";
+                        }
+                        if (square.hasHeat) {
+                            textForLabel += "\nHE";
+                        }
+                        if (square.hasBreeze) {
+                            textForLabel += "\nB";
+                        }
+                        text = new Label(textForLabel);
+                        text.setFont(new Font(30));
+                        rect = new Rectangle(222, 222, color); // entire grid made up of rectangles
+                        pane.getChildren().addAll(rect,text);
+                    } else if (square.type == 2) {
+                        pane = new StackPane();
+                        String textForLabel = "HERO";
+                        if (square.hasStench) {
+                            textForLabel += "\nS";
+                        }
+                        if (square.hasNoise) {
+                            textForLabel += "\nN";
+                        }
+                        if (square.hasHeat) {
+                            textForLabel += "\nHE";
+                        }
+                        if (square.hasBreeze) {
+                            textForLabel += "\nB";
+                        }
+                        text = new Label(textForLabel);
+                        text.setFont(new Font(30));
+                        rect = new Rectangle(222, 222, color); // entire grid made up of rectangles
+                        pane.getChildren().addAll(rect,text);
+                    } else if (square.type == 3) {
+                        pane = new StackPane();
+                        String textForLabel = "MAGE";
+                        if (square.hasStench) {
+                            textForLabel += "\nS";
+                        }
+                        if (square.hasNoise) {
+                            textForLabel += "\nN";
+                        }
+                        if (square.hasHeat) {
+                            textForLabel += "\nHE";
+                        }
+                        if (square.hasBreeze) {
+                            textForLabel += "\nB";
+                        }
+                        text = new Label(textForLabel);
+                        text.setFont(new Font(30));
+                        rect = new Rectangle(222, 222, color); // entire grid made up of rectangles
+                        pane.getChildren().addAll(rect,text);
+                    } else {}
+                    addClick(pane,c,r);
+                    gridPane.add(pane, c, r);
+                } else {    // everything else is red
+                    color = Color.RED;
+
+                    StackPane pane = new StackPane();
+                    Label text = new Label("PIT");
+
+                    pane = new StackPane();
+                    String textForLabel = "";
+
+                    textForLabel += "P(W): " + square.probWumpus;
+                    textForLabel += "\nP(H): " + square.probHero;
+                    textForLabel += "\nP(M): " + square.probMage;
+                    textForLabel += "\nP(P): " + square.probPit;
+
+                    text = new Label(textForLabel);
+                    text.setFont(new Font(30));
+                    rect = new Rectangle(222, 222, color); // entire grid made up of rectangles
+                    pane.getChildren().addAll(rect,text);
+
+                    addClick(pane,c,r);
+                    gridPane.add(pane, c, r);
+                }
+            } // ends inner for-loop
+        } // ends outer-for loop
+    } // ends the colorBoard3WithFog() method
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // method to color the 6x6 grid (NORMAL)
     public void colorBoard6() {
         this.gridPane.getChildren().clear();
 
@@ -279,10 +427,19 @@ public class Controller {
                 gridPane.add(pane, c, r);
             } // ends inner for-loop
         } // ends outer-for loop
-    }
+    } // end the colorBoard6() method
 
 
 
+
+
+
+
+
+
+
+
+    // method to color the 9x9 grid (NORMAL)
     public void colorBoard9() {
         this.gridPane.getChildren().clear();
 
@@ -344,11 +501,23 @@ public class Controller {
                 gridPane.add(pane, c, r);
             } // ends inner for-loop
         } // ends outer-for loop
-    }
+    } // ends the colorBoard9() method
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+    // method to get the human's move
     public void addClick(StackPane pane , int c , int r) {
         int realRow = r-1;
         int realCol = c-1;
@@ -372,8 +541,20 @@ public class Controller {
                 }
             }
         });
-    }
+    } // ends the addClick() method
 
+
+
+
+
+
+
+
+
+
+
+
+    // method to play human's move and show on the board
     public void makeHumanMove() throws InterruptedException {
         if (board.aiHasWon()) {
             textArea.appendText("\n\nAI WINS!");
@@ -392,7 +573,7 @@ public class Controller {
             return;
         }
 
-        textArea.appendText("\n\nHUMAN's MOVE:");
+        //textArea.appendText("\n\nHUMAN's MOVE:");
         if (nextMove[0] == -1) {
             textArea.appendText("\nHUMAN HAS STOPPED THE GAME");
             playButton.setDisable(false);
@@ -401,8 +582,15 @@ public class Controller {
         } else {
             if (board.nextMove(nextMove,1)) {
                 if (size == 3) {
-                    printHumanMove(nextMove);
-                    colorBoard3();
+                    //printHumanMove(nextMove);
+                    if (FogOfWarButton.isSelected()) {
+                        printHumanMove(nextMove);
+                        colorBoard3WithFog();
+                    } else {
+                        printHumanMove(nextMove);
+                        colorBoard3();
+                    }
+                    //colorBoard3();
                     startSquareClicked = false;
                     endSquareClicked = false;
                     makeAIMove();
@@ -430,8 +618,20 @@ public class Controller {
             }
 
         }
-    }
+    } // ends the makeHumanMove() method
 
+
+
+
+
+
+
+
+
+
+
+
+    // get AI's move and then play it on the board
     public void makeAIMove() {
         if (board.aiHasWon()) {
             textArea.appendText("\n\nAI WINS!");
@@ -454,8 +654,14 @@ public class Controller {
             aiMove = board.findNextBestMove();
         }
         if (size == 3) {
-            printAIMove(aiMove);
-            colorBoard3();
+            //printAIMove(aiMove);
+            if (FogOfWarButton.isSelected()) {
+                colorBoard3WithFog();
+            } else {
+                printAIMove(aiMove);
+                colorBoard3();
+            }
+            //colorBoard3();
         } else if (size == 6) {
             printAIMove(aiMove);
             colorBoard6();
@@ -480,18 +686,47 @@ public class Controller {
             gameStarted = false;
             return;
         }
-
         return;
-    }
+    } // ends the makeAIMove() method
 
+
+
+
+
+
+
+
+
+
+    // method that will stop the game
     public void stopGameClicked() throws InterruptedException {
         nextMove[0] = -1;
         startSquareClicked = true;
         endSquareClicked = true;
         gameStarted = false;
         makeHumanMove();
-    }
+    } // ends the stopGameClicked() method
 
+
+
+
+
+    // method that will turn the Fog of War on or off
+    public void FogOfWarButtonClicked() {
+        if (FogOfWarButton.isSelected()) {
+            colorBoard3WithFog();
+        } else {
+            colorBoard3();
+        }
+    } // ends the FogOfWarButtonClicked() method
+
+
+
+
+
+
+
+    // this will start a new game
     public void playButtonClicked() throws InterruptedException {
         // initialize the grid based on the chosen size and heuristic to use
         initializeGridGUI(gridPane);
@@ -507,21 +742,39 @@ public class Controller {
         startSquareClicked = false;
         endSquareClicked = false;
         gameStarted = true;
+    } // ends the playButtonClicked() method
 
-    }
 
 
+
+
+
+
+
+
+
+
+    // method to print Human's move
     public void printHumanMove(int[] move) {
+        textArea.appendText("\n\nHUMAN'S MOVE: \n(" + move[0] + " , " + move[1] + ") to (" + move[2] + " , " + move[3] + ")");
+    } // ends the printHumanMove() method
 
-        textArea.appendText("\n(" + move[0] + " , " + move[1] + ") to (" + move[2] + " , " + move[3] + ")");
 
-    }
 
+
+
+
+
+
+
+    // method to print out the AI's move
     public void printAIMove(int[] move) {
-
         textArea.appendText("\n\nAI's MOVE: \n(" + move[0] + " , " + move[1] + ") to (" + move[2] + " , " + move[3] + ")");
+    } // ends the printAIMove() method
 
 
-    }
 
-}
+
+
+
+} // ends the Controller class
