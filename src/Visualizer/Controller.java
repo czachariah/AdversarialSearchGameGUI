@@ -114,7 +114,7 @@ public class Controller {
             } else {
                 board.heuToUse = 6;
             }
-
+            board.getObservations();
             if (FogOfWarButton.isSelected()) {
                 colorBoard3WithFog();
             } else {
@@ -141,6 +141,7 @@ public class Controller {
             } else {
                 board.heuToUse = 6;
             }
+            board.getObservations();
             if (FogOfWarButton.isSelected()) {
                 colorBoard6WithFog();
             } else {
@@ -166,6 +167,7 @@ public class Controller {
             } else {
                 board.heuToUse = 6;
             }
+            board.getObservations();
             if (FogOfWarButton.isSelected()) {
                 colorBoard9WithFog();
             } else {
@@ -919,6 +921,15 @@ public class Controller {
         while (board.nextMove(aiMove,0) == false) {
             aiMove = board.findNextBestMove();
         }
+
+
+
+        // here is where we add the probability calculations and obtain observations
+        board.getObservations();
+
+
+
+
         if (size == 3) {
             //printAIMove(aiMove);
             if (FogOfWarButton.isSelected()) {

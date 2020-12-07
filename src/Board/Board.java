@@ -791,6 +791,126 @@ public class Board {
         }
         return neighbors;
     } // ends the getNeighbors
+
+
+
+    /**
+     * This method will get all the possible neighbors (squares) that the current piece can move to
+     * @param curPiece
+     * @return
+     */
+    public List<int[]> getAllNeighbors(int[] curPiece) {
+        List<int[]> neighbors = new LinkedList<>();
+        for (int i = -1 ; i <= 1 ; ++i) {
+            for (int j = -1 ; j <= 1 ; ++j) {
+                if (i == 0 && j == 0) {continue;}
+                int curX = curPiece[0] + i;
+                int curY = curPiece[1] + j;
+                if ((isSquareOnBoard(curX, curY))                                         // valid piece on the board
+                        && (isNeighbor(curPiece[0], curPiece[1], curX, curY))                     // the current neighbor is in fact a neighbor
+                        && (board[curPiece[0]][curPiece[1]].color != board[curX][curY].color))      //the current neighbor isn't one of your own other pieces
+            {
+                    int[] coords = new int[2];
+                    coords[0] = curX;
+                    coords[1] = curY;
+                    neighbors.add(coords);
+                }
+            }
+        }
+        return neighbors;
+    } // ends the getNeighbors
+
+
+
+    // Method to get different observations (S,N,HE,B), then set them on the human pieces
+    public void getObservations() {
+        // get all human pieces
+        List<int[]> humanPieces = getCurrentHumanPieces();
+        for (int[] piece : humanPieces) {
+            board[piece[0]][piece[1]].hasStench = false;
+            board[piece[0]][piece[1]].hasNoise = false;
+            board[piece[0]][piece[1]].hasHeat = false;
+            board[piece[0]][piece[1]].hasBreeze = false;
+
+
+            // get all neightbors
+            List<int[]> neighbors = getAllNeighbors(piece);
+            for (int[] neighbor : neighbors) {
+
+                if (hasAIWumpus(neighbor)) {
+                    board[piece[0]][piece[1]].hasStench = true;
+                }
+
+                if (hasAIHero(neighbor)) {
+                    board[piece[0]][piece[1]].hasNoise = true;
+                }
+
+                if (hasAIMage(neighbor)) {
+                    board[piece[0]][piece[1]].hasHeat = true;
+                }
+
+                if (hasPit(neighbor)) {
+                    board[piece[0]][piece[1]].hasBreeze = true;
+                }
+
+            }
+
+        }
+
+
+    } // ends the getObservations() method
+
+
+    // true if it is a AI Wumpus
+    public boolean hasAIWumpus(int[] place) {
+        if ((board[place[0]][place[1]].color == 0) && (board[place[0]][place[1]].type == 1)) { // AI Wumpus
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    // true if it is a AI Hero
+    public boolean hasAIHero(int[] place) {
+        if ((board[place[0]][place[1]].color == 0) && (board[place[0]][place[1]].type == 2)) { // AI Hero
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    // true if it is a AI Mage
+    public boolean hasAIMage(int[] place) {
+        if ((board[place[0]][place[1]].color == 0) && (board[place[0]][place[1]].type == 3)) { // AI Mage
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    // true if it is a AI Mage
+    public boolean hasPit(int[] place) {
+        if (board[place[0]][place[1]].type == 0) { // Pit
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     
 } // this ends the Board class
 
