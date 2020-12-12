@@ -47,6 +47,8 @@ public class Piece {
         this.hasBreeze = hasBreeze;
     } // ends the Piece() constructor
 
+
+
     /*
     Types:
         0 : Pit (has no color association)

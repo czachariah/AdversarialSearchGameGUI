@@ -1,10 +1,8 @@
 package Board;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Random;
+import java.util.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * This is the Board class. This will be the interface used in order to make
@@ -19,6 +17,7 @@ public class Board {
     public List<int[]> allMoves = new LinkedList<>();   // will be used in order to store all the moves that have taken place
     public int treeDepth = 0;                           // will be the max depth of the minimax tree to look for the next move
     public int heuToUse = 0;                            // the heuristic for minimax to use
+    public int aiTurns = 0;                             // number of moves AI has made so far
 
 
     /**
@@ -426,7 +425,7 @@ public class Board {
                 if (nextMove(curMove, 0)) { // make AI move, then put into minimax
                     //treeDepth = getNumAIPieces();
                     curMoveVal = minimax(Integer.MIN_VALUE, Integer.MAX_VALUE, true, heuToUse , treeDepth);
-                    System.out.println(bestMoveVal + " | " + curMoveVal + " = (" + curMove[0] + " , " + curMove[1] + ") -> (" + curMove[2] + " , " + curMove[3] + ")");
+                    //System.out.println(bestMoveVal + " | " + curMoveVal + " = (" + curMove[0] + " , " + curMove[1] + ") -> (" + curMove[2] + " , " + curMove[3] + ")");
                     reverse();
                     if (curMoveVal != -1000 && curMoveVal > bestMoveVal) {
                         bestMoveVal = curMoveVal;
@@ -766,7 +765,7 @@ public class Board {
     
 
     /**
-     * This method will get all the possible neighbors (squares) that the current piece can move to
+     * This method will get all the possible neighbors (squares) that the current piece can move to (EXCEPT FOR PIT)
      * @param curPiece
      * @return
      */
@@ -792,6 +791,13 @@ public class Board {
         return neighbors;
     } // ends the getNeighbors
 
+
+
+
+
+
+    /*****************************************************************************************************************************************************************************************************/
+    // Here starts all the code written for Fog of War
 
 
     /**
@@ -861,7 +867,10 @@ public class Board {
     } // ends the getObservations() method
 
 
-    // true if it is a AI Wumpus
+
+
+
+    // true if that tile is a AI Wumpus
     public boolean hasAIWumpus(int[] place) {
         if ((board[place[0]][place[1]].color == 0) && (board[place[0]][place[1]].type == 1)) { // AI Wumpus
             return true;
@@ -871,7 +880,10 @@ public class Board {
     }
 
 
-    // true if it is a AI Hero
+
+
+
+    // true if that tile is a AI Hero
     public boolean hasAIHero(int[] place) {
         if ((board[place[0]][place[1]].color == 0) && (board[place[0]][place[1]].type == 2)) { // AI Hero
             return true;
@@ -881,7 +893,10 @@ public class Board {
     }
 
 
-    // true if it is a AI Mage
+
+
+
+    // true if that tile is a AI Mage
     public boolean hasAIMage(int[] place) {
         if ((board[place[0]][place[1]].color == 0) && (board[place[0]][place[1]].type == 3)) { // AI Mage
             return true;
@@ -891,7 +906,10 @@ public class Board {
     }
 
 
-    // true if it is a AI Mage
+
+
+
+    // true if that tile is a pit
     public boolean hasPit(int[] place) {
         if (board[place[0]][place[1]].type == 0) { // Pit
             return true;
@@ -901,114 +919,404 @@ public class Board {
     }
 
 
+    // will zero out all the probs of all non-human piece tiles
+    public void zeroOutProbs() {
+        for (int i = 0 ; i < size ; ++i) {
+            for (int j = 0 ; j < size ; ++j) {
+                if (board[i][j].color != 1) {
+                    board[i][j].probPit = 0.0;
+                    board[i][j].probMage = 0.0;
+                    board[i][j].probHero = 0.0;
+                    board[i][j].probWumpus = 0.0;
+                }
+            }
+        }
+    }
+
+
+    public boolean alreadyHas(List<int[]> arr, int[] p) {
+        if (arr.size() > 0) {
+            for(int[] i : arr) {
+                if (i[0] == p[0] && i[1] == p[1]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    // get surrounding human neighbors
+    public List<int[]> getHumanNeighbors(int[] curPiece) {
+        List<int[]> neighbors = new LinkedList<>();
+        for (int i = -1 ; i <= 1 ; ++i) {
+            for (int j = -1 ; j <= 1 ; ++j) {
+                if (i == 0 && j == 0) {continue;}
+                int curX = curPiece[0] + i;
+                int curY = curPiece[1] + j;
+                if ((isSquareOnBoard(curX, curY))                                         // valid piece on the board
+                        && (isNeighbor(curPiece[0], curPiece[1], curX, curY))                     // the current neighbor is in fact a neighbor
+                        && (board[curX][curY].color == 1) )                              // neighbors is a human piece
+                {
+                    int[] coords = new int[2];
+                    coords[0] = curX;
+                    coords[1] = curY;
+                    neighbors.add(coords);
+                }
+            }
+        }
+        return neighbors;
+    }
 
 
 
+    // this is the method called to update probabilities for the human every turn
+    public void updateProbs() {
+        // zero out the probs first
+        zeroOutProbs();
+
+        if (size == 3) {
+            // go through list of observations for 3x3 (S,N,HE)
+            for (int i = 1; i <= 3 ; ++i) {
+                List<int[]> pieceList = getPieceList(i);
+
+//                System.out.println(i + " , " + pieceList.size());
+//                if (pieceList.size() > 0) {
+//                    for (int[] piece : pieceList) {
+//                        System.out.println("(" + piece[0] + " , " + piece[1] + ")");
+//                    }
+//                }
+
+                if (i == 1) { // wumpus / S
+                    if (pieceList.size() > 0) {
+                        // get shared neighbors of the pieces in the pieceList
+                        List<int[]> sharedNeighbors = new ArrayList<>();
+                        for (int[] piece : pieceList) {
+                            List<int[]> neighbors = getAllNeighbors(piece);
+                            for (int[] neighbor : neighbors) {
+                                //System.out.println("(" + neighbor[0] + " , " + neighbor[1] + ")");
+                                if (sharedNeighbors.size() == 0) {
+                                    sharedNeighbors.add(neighbor);
+                                } else if (alreadyHas(sharedNeighbors,neighbor) == false) {
+                                    sharedNeighbors.add(neighbor);
+                                }
+                            }
+                        }
+                        List<int[]> possibleTiles = new ArrayList<>();
+                        if (sharedNeighbors.size() > 0) {
+                            for(int[] neighbor : sharedNeighbors) {
+                                //System.out.println("(" + neighbor[0] + " , " + neighbor[1] + ")");
+                            }
+                            // find neighbor whose neighbors are all the pieces in the piece list
+                            for (int[] neighbor : sharedNeighbors) {
+                                List<int[]> humanNeighbors = getHumanNeighbors(neighbor);
+                                if (humanNeighbors.size() == pieceList.size()) {
+                                    boolean good = false;
+                                    for (int[] piece : pieceList) {
+                                        good = alreadyHas(humanNeighbors, piece);
+                                        if (!good) {
+                                            break;
+                                        }
+                                    }
+                                    if (good) {
+                                        possibleTiles.add(neighbor);
+                                    }
+                                }
+                            }
+                        }
+                        //System.out.println();
+                        if (possibleTiles.size() > 0) {
+                            for(int[] tile : possibleTiles) {
+                                //System.out.println("(" + tile[0] + " , " + tile[1] + ")");
+                            }
+                            // since 3x3 with 1 wumpus
+                            double probW = 1.0 / (double)possibleTiles.size();
+                            BigDecimal bd = new BigDecimal(probW).setScale(2, RoundingMode.HALF_UP);
+                            probW = bd.doubleValue();
+                            for (int[] tile : possibleTiles) {
+                                board[tile[0]][tile[1]].probWumpus = probW;
+                            }
+                        }
+
+                    } else {
+
+                        // check if AI has wumpus
+                        List<int[]> aiPieces = getCurrentAIPieces();
+                        boolean hasPiece = false;
+                        for (int[] piece : aiPieces) {
+                            if (board[piece[0]][piece[1]].color == 0 && board[piece[0]][piece[1]].type == 1) {
+                                hasPiece = true;
+                            }
+                        }
+
+                        if (hasPiece) {
+                            // evenly distribute among tiles that are not neighbors of any human piece
+                            List<int[]> possibleTiles = new ArrayList<>();
+                            for (int k = 0 ; k < size ; ++k)  {
+                                for (int l = 0 ; l < size ; ++l ) {
+                                    int[] curPlace = {k,l};
+                                    if (board[curPlace[0]][curPlace[1]].color != 1) {
+                                        List<int[]> humans = getHumanNeighbors(curPlace);
+                                        if (humans.size() == 0) {
+                                            possibleTiles.add(curPlace);
+                                        }
+                                    }
+                                }
+                            }
+                            if (possibleTiles.size() > 0) {
+                                // since 3x3 with 1 wumpus
+                                double probW = 1.0 / (double)possibleTiles.size();
+                                BigDecimal bd = new BigDecimal(probW).setScale(2, RoundingMode.HALF_UP);
+                                probW = bd.doubleValue();
+                                for (int[] tile : possibleTiles) {
+                                    board[tile[0]][tile[1]].probWumpus = probW;
+                                }
+                            } else {
+                                for (int[] tile : possibleTiles) {
+                                    board[tile[0]][tile[1]].probWumpus = 0.0;
+                                }
+                            }
+                        }
+
+                    }
+
+                } else if (i == 2) { // hero / N
+                    if (pieceList.size() > 0) {
+                        // get shared neighbors of the pieces in the pieceList
+                        List<int[]> sharedNeighbors = new ArrayList<>();
+                        for (int[] piece : pieceList) {
+                            List<int[]> neighbors = getAllNeighbors(piece);
+                            for (int[] neighbor : neighbors) {
+                                //System.out.println("(" + neighbor[0] + " , " + neighbor[1] + ")");
+                                if (sharedNeighbors.size() == 0) {
+                                    sharedNeighbors.add(neighbor);
+                                } else if (alreadyHas(sharedNeighbors,neighbor) == false) {
+                                    sharedNeighbors.add(neighbor);
+                                }
+                            }
+                        }
+                        List<int[]> possibleTiles = new ArrayList<>();
+                        if (sharedNeighbors.size() > 0) {
+                            for(int[] neighbor : sharedNeighbors) {
+                                //System.out.println("(" + neighbor[0] + " , " + neighbor[1] + ")");
+                            }
+                            // find neighbor whose neighbors are all the pieces in the piece list
+                            for (int[] neighbor : sharedNeighbors) {
+                                List<int[]> humanNeighbors = getHumanNeighbors(neighbor);
+                                if (humanNeighbors.size() == pieceList.size()) {
+                                    boolean good = false;
+                                    for (int[] piece : pieceList) {
+                                        good = alreadyHas(humanNeighbors, piece);
+                                        if (!good) {
+                                            break;
+                                        }
+                                    }
+                                    if (good) {
+                                        possibleTiles.add(neighbor);
+                                    }
+                                }
+                            }
+                        }
+                        //System.out.println();
+                        if (possibleTiles.size() > 0) {
+                            for(int[] tile : possibleTiles) {
+                                //System.out.println("(" + tile[0] + " , " + tile[1] + ")");
+                            }
+                            // since 3x3 with 1 hero
+                            double probH = 1.0 / (double)possibleTiles.size();
+                            BigDecimal bd = new BigDecimal(probH).setScale(2, RoundingMode.HALF_UP);
+                            probH = bd.doubleValue();
+                            for (int[] tile : possibleTiles) {
+                                board[tile[0]][tile[1]].probHero = probH;
+                            }
+                        }
+
+                    } else {
+                        // check if AI has hero
+                        List<int[]> aiPieces = getCurrentAIPieces();
+                        boolean hasPiece = false;
+                        for (int[] piece : aiPieces) {
+                            if (board[piece[0]][piece[1]].color == 0 && board[piece[0]][piece[1]].type == 2) {
+                                hasPiece = true;
+                            }
+                        }
+
+                        if (hasPiece) {
+                            // evenly distribute among tiles that are not neighbors of any human piece
+                            List<int[]> possibleTiles = new ArrayList<>();
+                            for (int k = 0 ; k < size ; ++k)  {
+                                for (int l = 0 ; l < size ; ++l ) {
+                                    int[] curPlace = {k,l};
+                                    if (board[curPlace[0]][curPlace[1]].color != 1) {
+                                        List<int[]> humans = getHumanNeighbors(curPlace);
+                                        if (humans.size() == 0) {
+                                            possibleTiles.add(curPlace);
+                                        }
+                                    }
+                                }
+                            }
+                            if (possibleTiles.size() > 0) {
+                                // since 3x3 with 1 hero
+                                double probH = 1.0 / (double)possibleTiles.size();
+                                BigDecimal bd = new BigDecimal(probH).setScale(2, RoundingMode.HALF_UP);
+                                probH = bd.doubleValue();
+                                for (int[] tile : possibleTiles) {
+                                    board[tile[0]][tile[1]].probHero = probH;
+                                }
+                            } else {
+                                for (int[] tile : possibleTiles) {
+                                    board[tile[0]][tile[1]].probHero = 0.0;
+                                }
+                            }
+                        }
+
+                    }
+
+                } else { // mage / HE
+                    if (pieceList.size() > 0) {
+                        // get shared neighbors of the pieces in the pieceList
+                        List<int[]> sharedNeighbors = new ArrayList<>();
+                        for (int[] piece : pieceList) {
+                            List<int[]> neighbors = getAllNeighbors(piece);
+                            for (int[] neighbor : neighbors) {
+                                //System.out.println("(" + neighbor[0] + " , " + neighbor[1] + ")");
+                                if (sharedNeighbors.size() == 0) {
+                                    sharedNeighbors.add(neighbor);
+                                } else if (alreadyHas(sharedNeighbors,neighbor) == false ) {
+                                        sharedNeighbors.add(neighbor);
+                                }
+                            }
+                        }
+                        List<int[]> possibleTiles = new ArrayList<>();
+                        if (sharedNeighbors.size() > 0) {
+                            for(int[] neighbor : sharedNeighbors) {
+                                //System.out.println("(" + neighbor[0] + " , " + neighbor[1] + ")");
+                            }
+                            // find neighbor whose neighbors are all the pieces in the piece list
+                            for (int[] neighbor : sharedNeighbors) {
+                                List<int[]> humanNeighbors = getHumanNeighbors(neighbor);
+                                if (humanNeighbors.size() == pieceList.size()) {
+                                    boolean good = false;
+                                    for (int[] piece : pieceList) {
+                                        good = alreadyHas(humanNeighbors, piece);
+                                        if (!good) {
+                                            break;
+                                        }
+                                    }
+                                    if (good && neighbor[0] <= aiTurns) {
+                                        possibleTiles.add(neighbor);
+                                    }
+                                }
+                            }
+                        }
+                        //System.out.println();
+                        if (possibleTiles.size() > 0) {
+                            for(int[] tile : possibleTiles) {
+                                //System.out.println("(" + tile[0] + " , " + tile[1] + ")");
+                            }
+                            // since 3x3 with 1 mage
+                            double probM = 1.0 / (double)possibleTiles.size();
+                            BigDecimal bd = new BigDecimal(probM).setScale(2, RoundingMode.HALF_UP);
+                            probM = bd.doubleValue();
+                            for (int[] tile : possibleTiles) {
+                                board[tile[0]][tile[1]].probMage = probM;
+                            }
+                        }
+
+                    } else {
+                        // check if AI has mage
+                        List<int[]> aiPieces = getCurrentAIPieces();
+                        boolean hasPiece = false;
+                        for (int[] piece : aiPieces) {
+                            if (board[piece[0]][piece[1]].color == 0 && board[piece[0]][piece[1]].type == 3) {
+                                hasPiece = true;
+                            }
+                        }
+
+                        if (hasPiece) {
+                            // evenly distribute among tiles that are not neighbors of any human piece
+                            List<int[]> possibleTiles = new ArrayList<>();
+                            for (int k = 0 ; k < size ; ++k)  {
+                                for (int l = 0 ; l < size ; ++l ) {
+                                    int[] curPlace = {k,l};
+                                    if (board[curPlace[0]][curPlace[1]].color != 1) {
+                                        List<int[]> humans = getHumanNeighbors(curPlace);
+                                        if (humans.size() == 0) {
+                                            possibleTiles.add(curPlace);
+                                        }
+                                    }
+                                }
+                            }
+                            if (possibleTiles.size() > 0) {
+                                // since 3x3 with 1 hero
+                                double probM = 1.0 / (double)possibleTiles.size();
+                                BigDecimal bd = new BigDecimal(probM).setScale(2, RoundingMode.HALF_UP);
+                                probM = bd.doubleValue();
+                                for (int[] tile : possibleTiles) {
+                                    board[tile[0]][tile[1]].probMage = probM;
+                                }
+                            } else {
+                                for (int[] tile : possibleTiles) {
+                                    board[tile[0]][tile[1]].probMage = 0.0;
+                                }
+                            }
+                        }
+
+                    }
+                }
+            } // ends the for-loop
+
+        } else if (size == 6) {
+
+        } else {
+
+        }
+
+    } // ends the updateProbs() method
 
 
 
+    // will return piece list (list of human pieces that share the same observation)
+    // type refers to what kind of observation
+    // 1 = Wumpus = S
+    // 2 = Hero = N
+    // 3 = Mage = HE
+    // 0 = Pit = B
+    public List<int[]> getPieceList(int type) {
+        List<int[]> pieceList = new ArrayList<>();
+        List<int[]> humanPieces = getCurrentHumanPieces();
+        if (type == 1) {
+            for(int[] piece : humanPieces) {
+                if (board[piece[0]][piece[1]].hasStench) {
+                    pieceList.add(piece);
+                }
+            }
+        } else if (type == 2) {
+            for(int[] piece : humanPieces) {
+                if (board[piece[0]][piece[1]].hasNoise) {
+                    pieceList.add(piece);
+                }
+            }
+
+        } else if (type == 3) {
+            for(int[] piece : humanPieces) {
+                if (board[piece[0]][piece[1]].hasHeat) {
+                    pieceList.add(piece);
+                }
+            }
+
+        } else {
+            for(int[] piece : humanPieces) {
+                if (board[piece[0]][piece[1]].hasBreeze) {
+                    pieceList.add(piece);
+                }
+            }
+        }
+        return pieceList;
+    } // ends the getPieceList()
 
 
 
 
     
 } // this ends the Board class
-
-/* 
-
-public int[] findNextBestMove() {
-        int[] bestMove = new int[4];            // best move to make at the end
-        int[] curMove = new int[4];             // current move to look at
-        int curMoveVal = Integer.MIN_VALUE;
-        int bestMoveVal = Integer.MIN_VALUE;
-        // get all the AI's pieces and run minimax on each one with specified depth
-        List<int[]> pieces = getCurrentAIPieces();
-        for (int[] piece : pieces) {
-            //System.out.println("Piece: (" + piece[0] + " , " + piece[1] + ")");
-            List<int[]> neighbors = getNeighbors(piece);
-            for (int[] neighbor : neighbors) {
-                //System.out.println("Neighbor: (" + neighbor[0] + " , " + neighbor[1] + ")");
-                curMove[0] = piece[0];
-                curMove[1] = piece[1];
-                curMove[2] = neighbor[0];
-                curMove[3] = neighbor[1];
-                if (nextMove(curMove, 0)) { // make AI move, then put into minimax
-                    curMoveVal = minimax(Integer.MIN_VALUE, Integer.MAX_VALUE, true, 1 , treeDepth);
-                    reverse();
-                    if (curMoveVal > bestMoveVal) {
-                        bestMoveVal = curMoveVal;
-                        bestMove[0] = curMove[0];
-                        bestMove[1] = curMove[1];
-                        bestMove[2] = curMove[2];
-                        bestMove[3] = curMove[3];
-                    }
-                }
-            }
-        }
-        return bestMove;
-    } 
-
-
-
-    public int minimax(int alpha , int beta , boolean isMaximizer , int heu , int curDepth) {
-        if (isDone() || curDepth == 0) {
-            if (heu == 1) {
-                return A();
-            } else if (heu == 2) {
-                return B();
-            }
-        }
-        if (isMaximizer) { // it is the AI
-            int value = Integer.MIN_VALUE;
-            // get all the AI's pieces and run minimax on each one with specified depth
-            List<int[]> pieces = getCurrentAIPieces();
-            for (int[] piece : pieces) {
-                List<int[]> neighbors = getNeighbors(piece);
-                for (int[] neighbor : neighbors) {
-                    int[] move = new int[4];
-                    move[0] = piece[0];
-                    move[1] = piece[1];
-                    move[2] = neighbor[0];
-                    move[3] = neighbor[1];
-                    if (nextMove(move, 0)) {
-                        int curEval = Integer.max(value, minimax(alpha, beta, !isMaximizer, heu, curDepth-1));
-                        value = Integer.max(value, curEval);
-                        alpha = Integer.max(alpha, curEval);
-                        if (beta <= alpha) {
-                            reverse();
-                            return value;
-                        }
-                        reverse();
-                    }
-                }
-            }
-            return value;
-        } else { // human
-            int value = Integer.MAX_VALUE;
-            // get all the Humans's pieces and run minimax on each one with specified depth
-            List<int[]> pieces = getCurrentHumanPieces();
-            for (int[] piece : pieces) {
-                List<int[]> neighbors = getNeighbors(piece);
-                for (int[] neighbor : neighbors) {
-                    int[] move = new int[4];
-                    move[0] = piece[0];
-                    move[1] = piece[1];
-                    move[2] = neighbor[0];
-                    move[3] = neighbor[1];
-                    if (nextMove(move, 1)) {
-                        int curEval = Integer.min(value, minimax(alpha, beta, !isMaximizer, heu, curDepth-1));
-                        value = Integer.min(value, curEval);
-                        beta = Integer.min(beta, curEval);
-                        if (beta <= alpha) {
-                            reverse();
-                            return value;
-                        }
-                        reverse();
-                    }
-                }
-            }
-            return value;
-        }
-    } 
-
-    */

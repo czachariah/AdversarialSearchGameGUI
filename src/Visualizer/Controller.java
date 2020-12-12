@@ -811,16 +811,25 @@ public class Controller {
     // method to play human's move and show on the board
     public void makeHumanMove() throws InterruptedException {
         if (board.aiHasWon()) {
+            board.zeroOutProbs();
+            FogOfWarButton.setSelected(false);
+            FogOfWarButtonClicked();
             textArea.appendText("\n\nAI WINS!");
             playButton.setDisable(false);
             gameStarted = false;
             return;
         } else if (board.manHasWon()) {
+            board.zeroOutProbs();
+            FogOfWarButton.setSelected(false);
+            FogOfWarButtonClicked();
             textArea.appendText("\n\nHUMAN WINS!");
             playButton.setDisable(false);
             gameStarted = false;
             return;
         } else if (board.draw()) {
+            board.zeroOutProbs();
+            FogOfWarButton.setSelected(false);
+            FogOfWarButtonClicked();
             textArea.appendText("\n\nDRAW!");
             playButton.setDisable(false);
             gameStarted = false;
@@ -900,18 +909,28 @@ public class Controller {
 
 
     // get AI's move and then play it on the board
-    public void makeAIMove() {
+    public void makeAIMove() throws InterruptedException {
+        //Thread.sleep(3000);
         if (board.aiHasWon()) {
+            board.zeroOutProbs();
+            FogOfWarButton.setSelected(false);
+            FogOfWarButtonClicked();
             textArea.appendText("\n\nAI WINS!");
             playButton.setDisable(false);
             gameStarted = false;
             return;
         } else if (board.manHasWon()) {
+            board.zeroOutProbs();
+            FogOfWarButton.setSelected(false);
+            FogOfWarButtonClicked();
             textArea.appendText("\n\nHUMAN WINS!");
             playButton.setDisable(false);
             gameStarted = false;
             return;
         } else if (board.draw()) {
+            board.zeroOutProbs();
+            FogOfWarButton.setSelected(false);
+            FogOfWarButtonClicked();
             textArea.appendText("\n\nDRAW!");
             playButton.setDisable(false);
             gameStarted = false;
@@ -922,11 +941,41 @@ public class Controller {
             aiMove = board.findNextBestMove();
         }
 
+        // update # of AI move
+        board.aiTurns += 1;
+        //System.out.println(board.aiTurns);
 
+        // print out the AI pieces
+        List<int[]> currAIPieces = board.getCurrentAIPieces();
+        textArea.appendText("\n\nCurrent AI Pieces:");
+        for(int[] piece : currAIPieces) {
+            if (board.board[piece[0]][piece[1]].type == 1) {
+                textArea.appendText("\nWumpus");
+            } else if (board.board[piece[0]][piece[1]].type == 2) {
+                textArea.appendText("\nHero");
+            } else {
+                textArea.appendText("\nMage");
+            }
+        }
 
-        // here is where we add the probability calculations and obtain observations
+        // print out the AI pieces
+        List<int[]> currHumanPieces = board.getCurrentHumanPieces();
+        textArea.appendText("\n\nCurrent Human Pieces:");
+        for(int[] piece : currHumanPieces) {
+            if (board.board[piece[0]][piece[1]].type == 1) {
+                textArea.appendText("\nWumpus");
+            } else if (board.board[piece[0]][piece[1]].type == 2) {
+                textArea.appendText("\nHero");
+            } else {
+                textArea.appendText("\nMage");
+            }
+        }
+
+        // get human pieces' observations
         board.getObservations();
 
+        // update the probabilities
+        board.updateProbs();
 
 
 
@@ -960,16 +1009,25 @@ public class Controller {
         }
 
         if (board.aiHasWon()) {
+            board.zeroOutProbs();
+            FogOfWarButton.setSelected(false);
+            FogOfWarButtonClicked();
             textArea.appendText("\n\nAI WINS!");
             playButton.setDisable(false);
             gameStarted = false;
             return;
         } else if (board.manHasWon()) {
+            board.zeroOutProbs();
+            FogOfWarButton.setSelected(false);
+            FogOfWarButtonClicked();
             textArea.appendText("\n\nHUMAN WINS!");
             playButton.setDisable(false);
             gameStarted = false;
             return;
         } else if (board.draw()) {
+            board.zeroOutProbs();
+            FogOfWarButton.setSelected(false);
+            FogOfWarButtonClicked();
             textArea.appendText("\n\nDRAW!");
             playButton.setDisable(false);
             gameStarted = false;
