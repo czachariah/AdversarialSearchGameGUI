@@ -127,7 +127,7 @@ public class Controller {
             this.gridPane.setVgap(5);
             this.size = 6;
             this.board = new Board(size);
-            this.board.treeDepth = 5;
+            this.board.treeDepth = 6;
             if (HeuA.isSelected()) {
                 board.heuToUse = 1;
             } else if (HeuB.isSelected()) {
@@ -153,7 +153,7 @@ public class Controller {
             this.gridPane.setVgap(5);
             this.size = 9;
             this.board = new Board(size);
-            this.board.treeDepth = 4;
+            this.board.treeDepth = 5;
             if (HeuA.isSelected()) {
                 board.heuToUse = 1;
             } else if (HeuB.isSelected()) {
@@ -936,10 +936,21 @@ public class Controller {
             gameStarted = false;
             return;
         }
-        int[] aiMove = board.findNextBestMove();
-        while (board.nextMove(aiMove,0) == false) {
+
+
+        int[] aiMove;
+        if (FogOfWarButton.isSelected()) {
+            aiMove = board.findNextBestMoveFogOfWar();
+            while (board.nextMove(aiMove,0) == false) {
+                aiMove = board.findNextBestMoveFogOfWar();
+            }
+        } else {
             aiMove = board.findNextBestMove();
+            while (board.nextMove(aiMove,0) == false) {
+                aiMove = board.findNextBestMove();
+            }
         }
+
 
         // update # of AI move
         board.aiTurns += 1;
@@ -958,7 +969,7 @@ public class Controller {
             }
         }
 
-        // print out the AI pieces
+        // print out the Human pieces
         List<int[]> currHumanPieces = board.getCurrentHumanPieces();
         textArea.appendText("\n\nCurrent Human Pieces:");
         for(int[] piece : currHumanPieces) {
